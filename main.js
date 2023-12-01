@@ -35,6 +35,25 @@ function bookAppointment() {
   }
 }
 
+function deleteAppointment(userId) {
+  // Retrieve existing appointments from local storage
+  const existingAppointments = JSON.parse(localStorage.getItem('appointments')) || [];
+
+  // Find the index of the appointment to be deleted
+  const indexToDelete = existingAppointments.findIndex(appointment => appointment.userId === userId);
+
+  if (indexToDelete !== -1) {
+    // Remove the appointment from the array
+    existingAppointments.splice(indexToDelete, 1);
+
+    // Save the updated appointments to local storage as a JSON string
+    localStorage.setItem('appointments', JSON.stringify(existingAppointments));
+
+    // Refresh the displayed appointments
+    displayAppointments();
+  }
+}
+
 function displayAppointments() {
   const appointmentsList = document.getElementById('appointmentsList');
   appointmentsList.innerHTML = '';
@@ -48,6 +67,13 @@ function displayAppointments() {
     appointments.forEach(function (appointment) {
       const listItem = document.createElement('li');
       listItem.textContent = `${appointment.name} - Date: ${appointment.date}, Time: ${appointment.time}`;
+      
+      // Add a delete button with an onclick event to call deleteAppointment function
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = 'Delete';
+      deleteButton.addEventListener('click', () => deleteAppointment(appointment.userId));
+      
+      listItem.appendChild(deleteButton);
       appointmentsList.appendChild(listItem);
     });
   }
